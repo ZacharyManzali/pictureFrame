@@ -1,0 +1,29 @@
+name: Hardware
+
+on:
+  push:
+    paths: ["hardware/**", ".github/workflows/hardware.yml"]
+  pull_request:
+    paths: ["hardware/**", ".github/workflows/hardware.yml"]
+  workflow_dispatch:
+
+jobs:
+  outputs:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+
+      # Runs ERC + DRC, then generates fab, assembly and documentation outputs.
+      # The action's KiCad major version must match the project's (KiCad 9).
+      - uses: INTI-CMNB/KiBot@v2_k9_1_9_0
+        with:
+          config: hardware/kibot.yaml
+          dir: outputs
+          schema: hardware/board.kicad_sch
+          board: hardware/board.kicad_pcb
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: hardware-outputs
+          path: outputs

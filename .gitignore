@@ -1,0 +1,25 @@
+# Generated outputs (CI rebuilds these; attach to releases instead of committing)
+outputs/
+build/
+
+# KiCad local/temporary files
+*.kicad_prl
+*-backups/
+_autosave-*
+*.lck
+~*.lck
+fp-info-cache
+*.bak
+\#auto_saved_files#
+
+# Zephyr / Python
+.venv/
+__pycache__/
+
+# Vendor datasheets: keep locally, link in docs/design-notes.md (copyrighted)
+docs/datasheets/
+
+# Editors / OS
+.vscode/*
+!.vscode/extensions.json
+.DS_Store

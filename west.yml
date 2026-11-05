@@ -1,0 +1,23 @@
+# West manifest: pins the exact Zephyr version and modules for this project,
+# so every build (yours, CI's, the client's) uses the same source.
+#
+# Set up a workspace (once per project):
+#   mkdir <project>-ws && cd <project>-ws
+#   git clone <this repo> project
+#   west init -l project && west update
+manifest:
+  remotes:
+    - name: zephyrproject-rtos
+      url-base: https://github.com/zephyrproject-rtos
+
+  projects:
+    - name: zephyr
+      remote: zephyrproject-rtos
+      revision: v4.4.2
+      import:
+        # Only fetch the modules this project needs. Add the HAL for your MCU
+        # family (e.g. hal_nordic, hal_espressif, hal_rpi_pico, hal_nxp).
+        name-allowlist:
+          - cmsis
+          - cmsis_6
+          - hal_stm32
