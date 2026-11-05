@@ -31,4 +31,7 @@ Drives R-PWR-1..5, R-CST-1. Candidates TBD. Universal input 100--240~VAC, NBR~14
 \section{Enclosure}
 Drives R-MEC-1..4. Candidates TBD: store-bought frame. Check inner depth and opening size against the panel.
 
+\section{Software}
+Decision: Python with pygame (see design notes). Open check, depends on the display chosen in the display study: confirm that SDL2's KMS/DRM backend and the panel's touch controller work together on Raspberry Pi OS Lite, and how the backlight is controlled (\textbf{unverified}).
+
 \end{document}

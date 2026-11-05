@@ -80,6 +80,25 @@ Each requirement is tracked as a GitHub issue carrying the same ID.
   \item Pi Zero 2 W RAM vs running SMB, web upload, email fetch and slideshow together.
 \end{itemize}
 
+\section{Software architecture}
+All software is Python. The slideshow uses pygame (SDL2) drawing directly to the display through KMS/DRM, with no desktop environment, to keep RAM use low. Each service runs under systemd.
+
+\begin{longtable}{l p{4.6cm} p{4.6cm}}
+\toprule
+\textbf{Service} & \textbf{Library} & \textbf{Requirements} \\
+\midrule\endhead
+slideshow & pygame (SDL2, KMS/DRM) & R-FTR-1; R-DSP-2 (swipe and tap from SDL touch events) \\
+web\_upload & Flask, plain HTML with a little JavaScript & R-UPL-2, R-UPL-4 \\
+email\_fetch & stdlib \texttt{imaplib} and \texttt{email}, on a timer & R-UPL-3 \\
+power\_mgr & schedule, PIR GPIO and light sensor I2C (gpiozero, smbus2); backlight and display on/off & R-FTR-2, R-FTR-3, R-FTR-4 \\
+SMB share & Samba configuration, no code & R-UPL-1 \\
+\bottomrule
+\end{longtable}
+
+The services share a photo directory on the external drive. Upload services write there and the slideshow rescans it, so no database is needed at first. Configuration lives in one TOML file (interval, schedule, IMAP account, paths).
+
+\textbf{Unverified assumptions} (depend on the display trade study): that SDL2's KMS/DRM backend and the panel's touch controller work together on Raspberry Pi OS Lite, and how the panel's backlight is controlled.
+
 \section{Key parts}
 \begin{tabular}{llll}
 \toprule
@@ -103,6 +122,7 @@ To be filled from datasheets once parts are chosen.
 2026-11-04 & Raspberry Pi as compute platform & Cost-effective, built-in Wi-Fi, USB storage & Not yet compared \\
 2026-11-04 & Store-bought front frame plus 3D-printed rear shell & Easier than fully printed or wood enclosure & Fully printed, woodworking \\
 2026-11-04 & Documentation written in \LaTeX{} & Owner preference & Markdown \\
+2026-11-04 & Python with pygame for the display; Python for all services & Light enough for a Pi Zero 2 W, one language, owner knows some Python & Chromium kiosk web UI (heavy for Zero 2 W), Qt/PySide6 (heavier, steeper learning curve) \\
 \bottomrule
 \end{longtable}
 
