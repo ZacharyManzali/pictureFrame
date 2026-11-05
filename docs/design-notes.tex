@@ -41,7 +41,7 @@ Each requirement is tracked as a GitHub issue carrying the same ID.
 \issue{R-PWR-1} & Single wall power cable into the frame, feeding Pi, panel and drive & Review \\
 \issue{R-PWR-2} & Power budget with $\ge$ 20\% margin, calculated from datasheets & Power budget (Section~\ref{sec:power}) \\
 \issue{R-PWR-3} & Used in Brazil (127~V or 220~V depending on region, 60~Hz): PSU must be universal input, 100--240~VAC, 50/60~Hz & PSU datasheet \\
-\issue{R-PWR-4} & Plug is Brazilian NBR~14136 (Type N), on the PSU or on a detachable cord (for example IEC C7/C8) so the cord can be bought locally & Review \\
+\issue{R-PWR-4} & Frame is built in the US and used in Brazil: the frame has a visible low-voltage 5~V DC inlet, and two separate external supplies are used, a US supply for building and a Brazilian supply (NBR~14136 plug, bought locally) for use. Mains never enters the frame & Review \\
 \issue{R-PWR-5} & Prefer INMETRO-certified PSU; mains stays outside the frame (external brick) so the enclosure only carries low-voltage DC & PSU listing \\
 \issue{R-CST-1} & Parts $\le$ \$300, drive not included & BOM \\
 \bottomrule
@@ -109,12 +109,28 @@ Display & Waveshare 10.1'' DSI LCD (C), SKU 23450 & Landscape 1280$\times$800 IP
 Storage & 1 TB 2.5'' SATA SSD in a USB-A enclosure (exact parts TBD) & Only option with a datasheet power figure; fits the Pi 4's 1.1 A USB budget & Samsung 870 EVO datasheet (reference candidate) \\
 Motion sensor & Adafruit PIR 189 & Documented 3.3 V logic output (seller claim), gpiozero support & Adafruit product page (seller claim; measure output before wiring) \\
 Light sensor & Adafruit VEML7700 breakout & Fixed I2C address 0x10, 3.3 V logic, 8 $\mu$A, low cost & Vishay VEML7700 datasheet \\
-Power supply & TBD & & \\
+Power supply & 5 V, at least 4 A (6 A preferred) external supply into a 5 V inlet; US reference: Mean Well GST60A05-P1J; Brazil supply bought locally (TBD) & Margin over a 3.4 A budget; mains stays outside the frame & Mean Well GST60A05 datasheet (inlet part TBD) \\
 \bottomrule
 \end{longtable}
 
 \section{Power budget}\label{sec:power}
-To be filled from datasheets once parts are chosen.
+Currents at 5~V. Typical and peak values are mostly \textbf{estimates}; only the Pi~4 typical (Raspberry Pi docs), the panel figures (Waveshare wiki) and the SSD average (Samsung 870~EVO datasheet) are sourced.
+
+\begin{tabular}{lll}
+\toprule
+\textbf{Load} & \textbf{Typical} & \textbf{Peak} \\
+\midrule
+Pi 4 (bare board) & 0.60 A & about 1.2 A (estimate) \\
+Waveshare DSI LCD (C) & 0.52 A & 0.88 A (minimum input) \\
+1 TB SATA SSD & 0.4--0.5 A & about 0.7 A (estimate) \\
+PIR and light sensor & about 0.01 A & about 0.05 A (estimate) \\
+\midrule
+\textbf{Total} & \textbf{about 1.5--1.6 A} & \textbf{about 2.8 A} \\
+Supply minimum (+20\%) & & about 3.4 A \\
+\bottomrule
+\end{tabular}
+
+The supply must therefore be 5~V and at least 4~A, with 6~A preferred. The panel needs 4.75--5.30~V at its input, so internal runs must be short and thick.
 
 \section{Decision log}
 \begin{longtable}{l p{4.2cm} p{4.2cm} p{3cm}}
@@ -127,6 +143,7 @@ To be filled from datasheets once parts are chosen.
 2026-11-04 & Raspberry Pi 4 Model B (4 GB) and Waveshare 10.1'' DSI LCD (C) & Function first; Pi 4 gives RAM and USB headroom, the DSI panel is landscape-native with documented backlight control and ships in the US & Zero 2 W, Pi 5, Compute Modules; ESP32 (no SMB, weak USB-drive and photo-decoding support); HDMI and other DSI panels \\
 2026-11-04 & Storage: 1 TB 2.5'' SATA SSD in a USB-A enclosure & Lowest risk against the Pi 4's 1.1 A aggregate USB budget; datasheet power figure exists & Samsung T7 (power unverified), SanDisk Extreme V2 (reported disconnects), NVMe enclosure, HDD \\
 2026-11-04 & Sensors: Adafruit PIR 189 (motion) and Adafruit VEML7700 (ambient light, I2C) & Both documented for 3.3 V Pi use, low cost, gpiozero and CircuitPython support & HC-SR501 (clone variation), SparkFun 13285 (needs pull-up), BH1750 (clips at about 65 klx), TSL2591 (higher cost and current) \\
+2026-11-04 & Power: 5 V DC inlet in the casing, with a separate external supply per country (US to build, Brazilian to use) & Keeps mains outside the frame (R-PWR-5), avoids relying on a US-bought supply being acceptable in Brazil & Mains inlet (IEC C14) in the casing; official Raspberry Pi 15 W supply (fixed plug, no margin) \\
 2026-11-04 & Depth limit raised from 25 mm to 60 mm; desk-only with angled easel back & Frame never hangs, so extra depth is acceptable; opens up Pi 4/5 with more RAM & Wall-hang, flat-base stand, lie-flat \\
 2026-11-04 & Python with pygame for the display; Python for all services & Light enough for a Pi Zero 2 W, one language, owner knows some Python & Chromium kiosk web UI (heavy for Zero 2 W), Qt/PySide6 (heavier, steeper learning curve) \\
 \bottomrule

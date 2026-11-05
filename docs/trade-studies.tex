@@ -179,7 +179,45 @@ OPT3001 (chip) & 0x44--0x47 [DS, unconfirmed] & 1.6--3.6~V, 1.8~$\mu$A [DS] & 83
 \paragraph{Not verified.} Panasonic and Murata PIR specs, Pi~4 5~V/3.3~V header pin limits, BH1750 and OPT3001 datasheet details, library support beyond the VEML7700.
 
 \section{Power supply}
-Drives R-PWR-1..5, R-CST-1. Candidates TBD. Universal input 100--240~VAC, NBR~14136 plug or detachable cord, INMETRO listing, output sized from the power budget plus 20\%.
+Drives R-PWR-1..5, R-CST-1. [DS] marks a datasheet or official value, [SC] a seller claim, [EST] an estimate.
+
+\paragraph{Budget.} See the power budget in the design notes: about 1.5--1.6~A typical and about 2.8~A peak at 5~V, so at least 3.4~A with a 20\% margin. The Pi~4 itself is rated for a 5~V/3~A supply (Pi~4 datasheet section 4.1) [DS]; peak values are estimates.
+
+\paragraph{How the panel is powered.}
+\begin{itemize}
+  \item The DSI connector has no 5~V pin; power comes through a separate 4-pin header with a PH2.0 cable (Waveshare wiki) [DS].
+  \item The wiki states 4.75--5.30~V and at least 0.88~A, and says lower current may cause startup failure or display problems [DS].
+  \item Which Pi header pins feed the 4-pin header is \textbf{not verified}: the wiki text does not give a pin table, and one seller summary says the GPIO 5~V pin [SC].
+  \item The official Pi documentation does not state a current rating for the 5~V header pin, nor whether it is fused. Forum posts claim a polyfuse is bypassed when feeding the pin [unofficial].
+\end{itemize}
+So drawing 0.5--0.9~A for the panel through the Pi's own 5~V pin is \textbf{unverified}. Taking it from a Pi USB port would instead use up the Pi's USB limit of about 1.1~A in aggregate (datasheet section 5.3) [DS], which the SSD also needs.
+
+\paragraph{Supply candidates.}
+\begin{longtable}{p{3.4cm} p{3cm} p{3.3cm} p{2.4cm} p{2.4cm}}
+\toprule
+\textbf{Supply} & \textbf{Output} & \textbf{Input / plug} & \textbf{Price (US)} & \textbf{Marks} \\
+\midrule\endhead
+Official Raspberry Pi 15 W USB-C & 5.1~V, 3.0~A [DS] & 100--240~VAC rated [DS]; fixed plug, captive cable & \$8.74 Adafruit & approvals not itemized \\
+Adafruit 5~V 4~A (\#1466) & 5~V, up to 4~A, 5.5/2.1~mm barrel [SC] & input range stated inconsistently [SC]; fixed US plug & \$14.95 Adafruit & ``UL Listed'' in name [SC] \\
+Mean Well GST60A05-P1J & 5~V, 6~A, $\pm$5\% [DS] & 90--264~VAC, IEC C14 inlet [DS] & about \$16.5--18.6 (aggregator snippets) & UL/EN 62368-1 and others [DS]; no INMETRO listed \\
+\bottomrule
+\end{longtable}
+
+The official supply fails on margin (about 2.8~A estimated peak against 3.0~A) and on its fixed plug. The Adafruit 4~A supply leaves little margin. The Mean Well has the most headroom.
+
+\paragraph{Brazil and the two-supply approach.}
+Because the frame is built in the US and used in Brazil, the frame takes a 5~V DC inlet and uses one external supply in each country. The Brazilian supply is bought locally, so it carries the local plug and markings. I found nothing stating whether INMETRO certification is compulsory for external power supplies, or whether a US-bought supply may be used in Brazil: \textbf{unverified}. A Brazilian plug on a locally bought supply avoids the question for the final frame.
+
+\textbf{Decision (owner, 2026-11-04):} 5~V DC inlet in the casing; separate external supply per country, each 5~V and at least 4~A (6~A preferred). The US build reference is the Mean Well GST60A05-P1J; the Brazilian supply is to be chosen locally.
+
+\paragraph{Still to decide and verify.}
+\begin{itemize}
+  \item The inlet connector (panel-mount barrel jack, screw terminal or USB-C) and its current rating, which I have not researched.
+  \item How the Pi is fed: a USB-C input fed from the 5~V rail (the Adafruit USB-C breakout has no stated 3~A rating), or the GPIO 5~V pins, which bypass the input protection.
+  \item The panel's 4-pin header pinout, from the wiki wiring photo or the physical panel.
+  \item Peak (not average) currents for the Pi~4 and the SSD, and PIR draw.
+  \item Whether the specific Mean Well P1J variant has the C14 inlet, and a Brazilian equivalent.
+\end{itemize}
 
 \section{Enclosure}
 Drives R-MEC-1..4. Candidates TBD: store-bought frame. Check inner depth and opening size against the panel.
