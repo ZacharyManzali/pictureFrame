@@ -1,0 +1,228 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{booktabs,longtable,array}
+\usepackage[colorlinks=true]{hyperref}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}p{2.7cm}}
+
+\title{pictureFrame: Trade Studies}
+\author{Zachary Manzali}
+\date{2026-11-04}
+
+\begin{document}
+\maketitle
+
+Every rating, pinout and dimension used here must come from a datasheet in \texttt{docs/datasheets/} (local only) and be cited. Unverified values are marked \textbf{unverified}.
+
+\section{Raspberry Pi model}
+Drives R-CMP-1, R-NET-1, R-UPL-*, R-STO-*, R-MEC-1. Priority is function first; dimensions are checked last.
+
+Source: official Raspberry Pi product briefs (Zero 2 W RP-008359-DS-1, Pi 4 RP-008344-DS-7, Pi 5 RP-008348-DS-10, CM4 RP-008169-DS-8, CM5 RP-008181-DS-13). Values marked * were read from a drawing, not stated in text.
+
+\begin{longtable}{l Y Y Y Y}
+\toprule
+ & \textbf{Zero 2 W} & \textbf{Pi 4 B} & \textbf{Pi 5} & \textbf{CM4 / CM5} \\
+\midrule\endhead
+Size & 65$\times$30 mm & 85$\times$56 mm* & 85$\times$56 mm* & 55$\times$40 mm \\
+RAM & 512 MB & 1--8 GB & 1--16 GB & 1--8 GB / 2--16 GB \\
+Wi-Fi & 2.4 GHz only & dual-band & dual-band & optional \\
+USB & 1 micro-USB 2.0 OTG & 2 USB 3.0, 2 USB 2.0 & 2 USB 3.0, 2 USB 2.0 & CM4: 1 USB 2.0; CM5: 1 USB 2.0, 2 USB 3.0 \\
+Display out & mini-HDMI (no DSI) & 2 micro-HDMI, DSI & 2 HDMI, 2 DSI & HDMI, DSI \\
+Power in & 5 V, 2.5 A & 5 V, 3 A min & 5 V, 5 A (PD) & 5 V \\
+Temp range & $-20$ to $+70$\,\textdegree C & 0 to 50\,\textdegree C & 0 to 70\,\textdegree C & $-20$ to $+85$\,\textdegree C \\
+Needs carrier board & no & no & no & yes \\
+\bottomrule
+\end{longtable}
+
+Not stated in the briefs: connector and total heights, power draw, USB output current budget, throttling behaviour. These remain \textbf{unverified}.
+
+\paragraph{Assessment.}
+\begin{itemize}
+  \item \textbf{Compute Modules:} rejected. They need a carrier board, which conflicts with using off-the-shelf parts and adds cost.
+  \item \textbf{Zero 2 W:} the single micro-USB port must serve the drive (adapter or hub needed), Wi-Fi is 2.4 GHz only, and 512 MB of RAM is tight for SMB, web upload, email fetch and slideshow together. It has no DSI. It remains a fallback only if a prototype memory test passes.
+  \item \textbf{Pi 4 B:} full-size USB ports for the drive, dual-band Wi-Fi, up to 8 GB RAM, and a smaller 3 A supply than the Pi 5. Operating range 0--50\,\textdegree C is fine for indoor use.
+  \item \textbf{Pi 5:} fastest, but it asks for a 5 V/5 A supply, which makes the shared power supply larger and warmer, and the extra speed is not needed for a photo slideshow.
+\end{itemize}
+
+\textbf{Decision (owner, 2026-11-04):} Raspberry Pi 4 Model B, 4 GB. The RAM size is my judgment for headroom and is not a measured requirement. Re-check against R-MEC-1 once heights are known.
+
+\section{Display (10'' IPS, touch)}
+Drives R-DSP-1..3, R-FTR-4, R-MEC-1. Everything below is from reseller or manufacturer product pages, \textbf{not datasheets}, until confirmed on the bench or from a drawing.
+
+\begin{longtable}{p{3.3cm} p{2.2cm} p{1.7cm} p{2.2cm} p{2.8cm} p{1.5cm}}
+\toprule
+\textbf{Panel} & \textbf{Input} & \textbf{Res.} & \textbf{Thickness} & \textbf{Backlight control} & \textbf{Price} \\
+\midrule\endhead
+Waveshare 10.1DP-CAPLCD & HDMI + USB touch & 1280$\times$800 & 11 mm (driver board included? unknown) & software (DDC/CI) & $\approx$\texteuro81 \\
+Waveshare 10.1'' DSI Touch-A & DSI & 800$\times$1280 & 10.8 mm & software & \$59.99 \\
+Waveshare 10.1'' DSI LCD (C) & DSI & 1280$\times$800 & not stated & software (sysfs 0--255) & $\approx$\$80 \\
+Raspberry Pi Touch Display 2 (10'') & DSI, Pi 5 and CM only & 1200$\times$1920 & 12.7 mm (Adafruit) & not stated & \$80--99 \\
+Waveshare HDMI LCD (E) & HDMI + USB touch & 1024$\times$600 & not stated & not stated & \$110 \\
+Elecrow DIS10185P & micro-HDMI + USB touch & 800$\times$1280 & not stated & hardware key only & not shown \\
+\bottomrule
+\end{longtable}
+
+Sources: Botland (10.1DP-CAPLCD), waveshare.com (Touch-A), Waveshare wiki (LCD (C)), raspberrypi.com and Adafruit (Touch Display 2), RobotShop (LCD (E)), Elecrow wiki.
+
+\paragraph{Assessment.}
+\begin{itemize}
+  \item \textbf{Elecrow:} rejected. Its listed viewing angle is 80\textdegree{} and brightness is a hardware key only, so it cannot meet R-FTR-4.
+  \item \textbf{Touch Display 2:} rejected for now. It works only with the Pi 5 or a Compute Module, which excludes the recommended Pi 4.
+  \item \textbf{LCD (E):} lowest resolution (1024$\times$600), no stated backlight control, highest price. Rejected.
+  \item \textbf{DSI panels (Touch-A, LCD (C)):} flat ribbon and software backlight, but they need Pi-specific cables and a \texttt{config.txt} overlay, and the Touch-A is portrait-native (800$\times$1280) so landscape needs rotation.
+  \item \textbf{10.1DP-CAPLCD:} works with any Pi over HDMI and USB, lists driver-free touch and software backlight control, and is 1280$\times$800 landscape. It also gives the widest choice if the Pi changes.
+\end{itemize}
+
+\paragraph{US-market follow-up.}
+The frame will ship to the US, so a second search looked for Pi~4-compatible panels sold in USD. Sources are the Waveshare wiki and store pages; stock was not stated on any page. Elecrow DIS85101D (physical brightness key only) and SunFounder TS-10 (12~V/5~A, no documented software brightness) fail the requirements.
+
+\begin{longtable}{p{3.4cm} p{1.6cm} p{2.3cm} p{3.2cm} p{1.7cm}}
+\toprule
+\textbf{Panel} & \textbf{Input} & \textbf{Resolution} & \textbf{Backlight (wiki)} & \textbf{Price (Waveshare US)} \\
+\midrule\endhead
+10.1'' DSI LCD (C) & DSI, 15-pin cable for Pi~4 & 1280$\times$800 & sysfs 0--255, Bookworm/Trixie & \$83.99 \\
+10.1'' DSI Touch-A & DSI & 800$\times$1280 portrait & sysfs 0--255 & \$59.99 \\
+10.1'' HDMI LCD (B) with case & HDMI + USB & 1280$\times$800 & script, Rev~4.1 board only & \$110.99 \\
+10.4'' QLED & HDMI + USB & 1600$\times$720 & DDC/CI, unconfirmed on Pi~4 & \$113.99 \\
+\bottomrule
+\end{longtable}
+
+\textbf{Decision (owner, 2026-11-04):} Waveshare 10.1'' DSI LCD (C), SKU 23450. It is landscape-native, uses one DSI cable, and the wiki documents sysfs backlight control and lists the Pi~4. The earlier lead, 10.1DP-CAPLCD, was dropped because I found no US listing or price for it.
+
+To verify before relying on it:
+\begin{itemize}
+  \item Touch works on Raspberry Pi OS Bookworm or Trixie. The Waveshare store page says a driver is required.
+  \item Real outer size, thickness and cable length. The wiki states none of them.
+  \item How the panel is powered from the Pi (the wiki gives 5~V, at least 0.88~A, with about 520~mA at full backlight) and whether that fits the Pi~4's header or needs its own feed. \textbf{Unverified.}
+  \item Stock and price at the Waveshare US store at order time.
+\end{itemize}
+
+\section{Storage}
+Drives R-STO-1, R-STO-2, R-PWR-2, R-MEC-1.
+
+\paragraph{Pi 4 USB limits (Raspberry Pi Pi~4 datasheet RP-008341-DS, sections 4.1 and 5.3; official power-supply documentation).}
+\begin{itemize}
+  \item Downstream USB current is limited to about 1.1~A in aggregate over the four sockets (datasheet). The documentation table says 1.2~A; plan for 1.1~A.
+  \item The Pi~4 needs a 5~V/3~A supply. A 2.5~A supply is allowed only if downstream USB devices draw under 500~mA, so a bus-powered SSD points to the 3~A supply.
+  \item Low-voltage detection triggers below 4.63~V and logs a kernel entry.
+  \item No official statement on UAS quirks or bus-powered SSD support was found; the quirk workaround (\texttt{usb-storage.quirks} in \texttt{cmdline.txt}) comes from forum posts only.
+\end{itemize}
+
+\paragraph{Candidates.} Prices are tracker snapshots and volatile; confirm before ordering. Only the 870~EVO has a datasheet power figure.
+
+\begin{longtable}{p{4.2cm} p{3.4cm} p{3.6cm} p{3.2cm}}
+\toprule
+\textbf{Drive} & \textbf{Power} & \textbf{Size} & \textbf{Price (US)} \\
+\midrule\endhead
+Samsung 870 EVO 2.5'' SATA SSD in a UGREEN USB-A enclosure (VL711F0 bridge, UASP, seller claim) & 2.2--2.5~W average, 30--35~mW idle (2~TB, datasheet); maximum: conflicting sources & SSD 100$\times$69.85$\times$6.8 mm; enclosure not stated & SSD about \$470--500 (2~TB); 1~TB and enclosure not priced \\
+Samsung T7 portable & not stated & 85$\times$57$\times$8.0 mm & 1~TB about \$220--265 \\
+SanDisk Extreme Portable V2 & not stated & 100.5$\times$52.4$\times$8.95 mm & 1~TB about \$244 \\
+Sabrent EC-SNVE + own M.2 SSD & not stated & about 117$\times$31.5$\times$12.7 mm & enclosure not found; may be end of life \\
+\bottomrule
+\end{longtable}
+
+\paragraph{Assessment.}
+\begin{itemize}
+  \item \textbf{HDD:} rejected. Spin-up surges are the worst case against a 1.1~A shared budget.
+  \item \textbf{NVMe in an enclosure:} rejected. Highest peak-draw risk, highest total cost, and the enclosure may be discontinued.
+  \item \textbf{SanDisk Extreme V2:} one forum thread reports disconnects on a Pi~4 (power may be the cause). Not preferred.
+  \item \textbf{T7:} slim and cheaper, but its current draw is unverified. Kept as the alternative.
+  \item \textbf{SATA SSD in a USB-A enclosure:} lowest risk. 2.5~W average is inside the budget (about 5.5~W at 1.1~A and 5~V), and it connects to the Pi's USB-A port. A BOM check found that the UGREEN CM471 uses a detachable micro-USB to USB-A cable rather than a built-in USB-A plug [SC]. It is the thickest option, which no longer matters under the 60~mm depth limit.
+\end{itemize}
+
+\textbf{Decision (owner, 2026-11-04):} lead with a 1~TB 2.5'' SATA SSD in a USB-A enclosure. The exact SSD and enclosure are not chosen yet. The 870~EVO with the UGREEN enclosure is the reference candidate; the 1~TB price, the enclosure's price and size, and the 870~EVO's maximum power are \textbf{unverified}.
+
+\paragraph{Bench checks.} Run \texttt{vcgencmd get\_throttled} and watch \texttt{dmesg} for undervoltage and UAS errors with the drive and the panel running together; get the bridge's USB ID with \texttt{lsusb} before adding any quirk.
+
+\section{Sensors}
+Drives R-FTR-3, R-FTR-4. [DS] marks a datasheet or official value; [SC] marks a seller claim.
+
+\paragraph{Pi 4 GPIO facts.}
+\begin{itemize}
+  \item GPIO logic is 3.3~V: VIL max 0.8~V, VIH min 2.0~V (Pi~4 datasheet RP-008341-DS, Table~3) [DS].
+  \item The official documentation says GPIO pins are not 5~V tolerant and 5~V must never be applied to one [DS].
+  \item The datasheet gives no absolute-maximum GPIO input voltage. Drive-current figures disagree between the datasheet and the documentation; a PIR output draws microamps, so this does not matter here.
+  \item Limits on the 5~V and 3.3~V header pins were \textbf{not found} in either official document: \textbf{unverified}.
+\end{itemize}
+
+\paragraph{PIR motion sensor (R-FTR-3).}
+\begin{longtable}{p{3.1cm} p{2.9cm} p{3.4cm} p{2.9cm} p{2.4cm}}
+\toprule
+\textbf{Part} & \textbf{Supply} & \textbf{Output} & \textbf{Range / angle} & \textbf{Price (US)} \\
+\midrule\endhead
+Adafruit PIR 189 & 5--12~V [SC] & 3.3~V logic [SC] & about 7~m, 120\textdegree{} [SC] & \$9.95 Adafruit \\
+HC-SR501 (generic) & 4.5--20~V or 5--20~V (sheets conflict) [DS, reseller-hosted] & 3.3~V [DS] & 7~m, under 120\textdegree{} [DS] & not verified \\
+SparkFun SEN-13285 & 5--12~V [SC] & open collector, needs pull-up, active low [SC] & not listed & \$11.50 SparkFun \\
+Adafruit Mini PIR 4871 & 3--12~V [SC] & 3.3~V [SC] & 2--5~m, 100\textdegree{} [SC] & \$3.95 Adafruit \\
+\bottomrule
+\end{longtable}
+
+Not verified: Panasonic EKMC (datasheet fetch failed), Murata IRA-S210ST01, Pimoroni and Seeed PIRs. Current draw and warm-up of the Adafruit 189 are not stated.
+
+\textbf{Decision (owner, 2026-11-04):} Adafruit PIR 189. Software uses gpiozero \texttt{MotionSensor} (\texttt{when\_motion}, \texttt{when\_no\_motion}) [DS, gpiozero docs]. Before wiring, \textbf{measure the output pin} with a multimeter to confirm it is 3.3~V, since the Pi~4 GPIO is not 5~V tolerant.
+
+\paragraph{Ambient light sensor, I2C (R-FTR-4).}
+\begin{longtable}{p{2.6cm} p{2.8cm} p{3cm} p{2.9cm} p{2.4cm}}
+\toprule
+\textbf{Part} & \textbf{I2C address} & \textbf{Supply / current} & \textbf{Range} & \textbf{Price (US)} \\
+\midrule\endhead
+VEML7700 (Adafruit 4162) & 0x10, fixed [DS] & chip 2.5--3.6~V, 8~$\mu$A operating [DS]; breakout has regulator and level shifter [SC] & 0 to about 140~klx on the chip [DS] & \$4.95 Adafruit \\
+BH1750 (Adafruit 4681) & 0x23, or 0x5C [SC] & 3--5~V breakout [SC] & about 65~klx, then clips [SC] & \$4.50 Adafruit \\
+TSL2591 (Adafruit 1980) & 0x29 [SC] & 3.3--5~V breakout; 275~$\mu$A typical active [DS, TSL25911 sheet] & to 88,000~lux [SC] & \$6.95 Adafruit \\
+OPT3001 (chip) & 0x44--0x47 [DS, unconfirmed] & 1.6--3.6~V, 1.8~$\mu$A [DS] & 83,865.6~lux full scale [DS] & no US breakout found \\
+\bottomrule
+\end{longtable}
+
+\textbf{Decision (owner, 2026-11-04):} Adafruit VEML7700. Gain and integration time must be set (autoranging) to avoid clipping in bright light, and readings are nonlinear at high lux without correction. The Waveshare DSI LCD (C) touch controller appears as a Goodix device (implied address 0x14, on a separate bus 10), which the wiki does not state outright, so no clash with 0x10 is expected: \textbf{unverified}; run \texttt{i2cdetect} on the real hardware.
+
+\paragraph{Not verified.} Panasonic and Murata PIR specs, Pi~4 5~V/3.3~V header pin limits, BH1750 and OPT3001 datasheet details, library support beyond the VEML7700.
+
+\section{Power supply}
+Drives R-PWR-1..5, R-CST-1. [DS] marks a datasheet or official value, [SC] a seller claim, [EST] an estimate.
+
+\paragraph{Budget.} See the power budget in the design notes: about 1.5--1.6~A typical and about 2.8~A peak at 5~V, so at least 3.4~A with a 20\% margin. The Pi~4 itself is rated for a 5~V/3~A supply (Pi~4 datasheet section 4.1) [DS]; peak values are estimates.
+
+\paragraph{How the panel is powered.}
+\begin{itemize}
+  \item The DSI connector has no 5~V pin; power comes through a separate 4-pin header with a PH2.0 cable (Waveshare wiki) [DS].
+  \item The wiki states 4.75--5.30~V and at least 0.88~A, and says lower current may cause startup failure or display problems [DS].
+  \item Which Pi header pins feed the 4-pin header is \textbf{not verified}: the wiki text does not give a pin table, and one seller summary says the GPIO 5~V pin [SC].
+  \item The official Pi documentation does not state a current rating for the 5~V header pin, nor whether it is fused. Forum posts claim a polyfuse is bypassed when feeding the pin [unofficial].
+\end{itemize}
+So drawing 0.5--0.9~A for the panel through the Pi's own 5~V pin is \textbf{unverified}. Taking it from a Pi USB port would instead use up the Pi's USB limit of about 1.1~A in aggregate (datasheet section 5.3) [DS], which the SSD also needs.
+
+\paragraph{Supply candidates.}
+\begin{longtable}{p{3.4cm} p{3cm} p{3.3cm} p{2.4cm} p{2.4cm}}
+\toprule
+\textbf{Supply} & \textbf{Output} & \textbf{Input / plug} & \textbf{Price (US)} & \textbf{Marks} \\
+\midrule\endhead
+Official Raspberry Pi 15 W USB-C & 5.1~V, 3.0~A [DS] & 100--240~VAC rated [DS]; fixed plug, captive cable & \$8.74 Adafruit & approvals not itemized \\
+Adafruit 5~V 4~A (\#1466) & 5~V, up to 4~A, 5.5/2.1~mm barrel [SC] & input range stated inconsistently [SC]; fixed US plug & \$14.95 Adafruit & ``UL Listed'' in name [SC] \\
+Mean Well GST60A05-P1J & 5~V, 6~A, $\pm$5\% [DS] & 90--264~VAC, IEC C14 inlet [DS] & about \$16.5--18.6 (aggregator snippets) & UL/EN 62368-1 and others [DS]; no INMETRO listed \\
+\bottomrule
+\end{longtable}
+
+The official supply fails on margin (about 2.8~A estimated peak against 3.0~A) and on its fixed plug. The Adafruit 4~A supply leaves little margin. The Mean Well has the most headroom.
+
+\paragraph{Brazil and the two-supply approach.}
+Because the frame is built in the US and used in Brazil, the frame takes a 5~V DC inlet and uses one external supply in each country. The Brazilian supply is bought locally, so it carries the local plug and markings. I found nothing stating whether INMETRO certification is compulsory for external power supplies, or whether a US-bought supply may be used in Brazil: \textbf{unverified}. A Brazilian plug on a locally bought supply avoids the question for the final frame.
+
+\textbf{Decision (owner, 2026-11-04):} 5~V DC inlet in the casing; separate external supply per country, each 5~V and at least 4~A (6~A preferred). The US build reference is the Mean Well GST60A05-P1J; the Brazilian supply is to be chosen locally.
+
+\paragraph{Still to decide and verify.}
+\begin{itemize}
+  \item The inlet connector (panel-mount barrel jack, screw terminal or USB-C) and its current rating, which I have not researched.
+  \item How the Pi is fed: a USB-C input fed from the 5~V rail (the Adafruit USB-C breakout has no stated 3~A rating), or the GPIO 5~V pins, which bypass the input protection.
+  \item The panel's 4-pin header pinout, from the wiki wiring photo or the physical panel.
+  \item Peak (not average) currents for the Pi~4 and the SSD, and PIR draw.
+  \item Whether the specific Mean Well P1J variant has the C14 inlet, and a Brazilian equivalent.
+\end{itemize}
+
+\section{Enclosure}
+Drives R-MEC-1..4. Candidates TBD: store-bought frame. Check inner depth and opening size against the panel.
+
+\section{Software}
+Decision: Python with pygame (see design notes). Open check, depends on the display chosen in the display study: confirm that SDL2's KMS/DRM backend and the panel's touch controller work together on Raspberry Pi OS Lite, and how the backlight is controlled (\textbf{unverified}).
+
+\end{document}

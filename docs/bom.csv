@@ -1,0 +1,25 @@
+Line,Item,MPN/SKU,Seller,Unit USD,Qty,Status,URL,Notes
+1,Raspberry Pi 4 Model B 4GB (bare board),Adafruit PID 4296,Adafruit,120.00,1,Verified on page,https://www.adafruit.com/product/4296,In stock. Box contents not stated. No microSD kit on this page. PiShop.us Budget Kit has a RAM choice but price and microSD inclusion unconfirmed.
+2,Waveshare 10.1inch DSI LCD (C),SKU 23450,Waveshare US store,83.99,1,Verified on page,https://www.waveshare.com/10.1inch-dsi-lcd-c.htm,Stock not stated. Box: 160 mm 15-pin FPC and 50 mm 15-pin FPC and 12 cm DSI cable (Pi 5/CM4/CM3) and 200 mm PH2.0 4-pin cable and screw pack. Seller claim.
+3a,Samsung 870 EVO 1TB 2.5in SATA SSD,MZ-77E1T0B/AM,Amazon US,335.17,1,Snippet only,https://www.amazon.com/dp/B08QBJ2YMG,Price tracker value 2026-08-06; B&H tracked at 349.99. Amazon page showed no price. Unverified.
+3b,UGREEN CM471 2.5in USB 3.0 enclosure,CM471,Amazon US,,1,Not priced,,UASP claimed by retailers. Uses a detachable micro-USB to USB-A cable (0.3 to 0.5 m per listings); it does NOT have a built-in USB-A plug. Other SKUs (30725/30848) unconfirmed.
+3c,Alternative: Samsung T7 1TB portable SSD,MU-PC1T0T/AM,Best Buy / Staples,189.99,0,Snippet only,https://www.bestbuy.com/product/samsung-t7-1tb-external-usb-3-2-gen-2-portable-ssd-with-hardware-encryption-titan-gray/J3ZYGCQG8H,Not in the subtotal. Staples snippet 118.54. Included cable not confirmed.
+4a,Adafruit PIR motion sensor,PID 189,Adafruit,9.95,1,Verified on page,https://www.adafruit.com/product/189,In stock. Includes 1 ft cable with 3-wire socket.
+4b,Adafruit VEML7700 lux sensor,PID 4162,Adafruit,4.95,1,Verified on page,https://www.adafruit.com/product/4162,In stock. STEMMA QT connectors; QT cable not included. Header state not stated.
+5,Mean Well 5V 6A supply,GST60A05-P1J,Jameco / Newark / Mouser,19.40,1,Snippet only,https://www.jameco.com/z/GST60A05-P1J-MEAN-WELL-5-Volt-6-Amp-30-Watt-3-Wire-Regulated-Switching-Desktop-Power-Adapter-2-1mm-Plug-Level-VI_2224358.html,Jameco page returned 403. Newark about 14.12 and Mouser about 22.36 (undated). AC inlet described as IEC C14 by element14 and RS; verify against datasheet.
+6,C13 power cord NEMA 5-15P 6 ft 18 AWG (build),StarTech PXT101,CDW,11.99,1,Snippet only,https://www.connection.com/product/startech.com-nema-5-15p-to-c13-18awg-computer-tv-pc-power-cable-6ft/pxt101/242805,10 A / 125 V UL listed per snippet.
+7,C13 power cord NBR 14136 6 ft (Brazil use),Signal and Power NBR14136 10A,Signal and Power,7.49,1,Snippet only,https://www.signalandpower.com/collections/nbr14136-10a,INMETRO approved per seller claim. Page returned 429. Watch 10 A vs 16 A plug. Alternative: Show Me Cables 44-347-1-8m (price not shown).
+8a,Panel-mount 2.1 mm DC jack,Adafruit PID 610,Adafruit,2.95,1,Out of stock,https://www.adafruit.com/product/610,Current rating not stated. Treat as unrated. Alternative CUI PJ-102AH (5 A per distributor listing; mounting style unverified).
+8b,2.1 mm DC plug to screw terminal,Adafruit PID 369,Adafruit,2.00,1,Verified on page,https://www.adafruit.com/product/369,In stock. No rating stated.
+8c,2.1 mm plug to bare-wire pigtail,,,,1,Not found,,Use PID 369 plus wire as a substitute.
+9a,USB-C breakout (Pi power input),Adafruit PID 4090,Adafruit,2.95,1,Verified on page,https://www.adafruit.com/product/4090,In stock. 5.1 kOhm on CC1 only per page (check CC2). No 3 A rating stated: UNRATED for 3 A.
+9b,USB-C cut-cable pigtail,,,,1,Not found,,
+10a,18 AWG silicone wire red/black 25 ft,BNTECHGO SW18G150008F25C2,Amazon US (not seen),45.99,1,Snippet only,,Price from a third-party site. Ampacity not stated. Looks high for a prototype; consider a smaller spool.
+10b,STEMMA QT to male header cable,Adafruit PID 4209,Adafruit,0.95,0,Verified on page,https://www.adafruit.com/product/4209,In stock. Male pins: not the right cable for the Pi header. Not in the subtotal.
+10c,STEMMA QT to female sockets cable,Adafruit PID 4397,Adafruit,0.95,1,Out of stock,https://www.adafruit.com/product/4397,Correct cable for VEML7700 to Pi header.
+10d,Female/female jumper wires 40 x 6 in,Adafruit PID 266,Adafruit,3.95,1,Verified on page,https://www.adafruit.com/product/266,In stock.
+10e,Ferrules / JST or Dupont connectors / heat-shrink,,,,1,Not priced,,
+11a,microSD 64GB high-endurance,Samsung PRO Endurance MB-MJ64KA/AM,CDW / Amazon,14.99,1,Snippet only,https://cdw.com/product/samsung-64gb-pro-endurance-microsdxc-memory-card-with-adapter/7016805,CDW shows it backordered. Undated 9.99 deal at Amazon and B&H.
+11b,USB microSD card reader,,,,1,Not found,,
+12,Digital multimeter 9205B+,Adafruit PID 2034,Adafruit,17.50,0,Out of stock,https://www.adafruit.com/product/2034,Not in the subtotal. Includes probes and battery.
+13,Pi T-Cobbler Plus (optional),Adafruit PID 2028,Adafruit,7.95,0,Snippet only,https://www.adafruit.com/products/2028,Optional breadboard breakout; not required. Not in the subtotal.

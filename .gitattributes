@@ -1,6 +1,4 @@
 * text=auto eol=lf
 
-*.step  binary
-*.wrl   binary
 *.pdf   binary
 *.zip   binary

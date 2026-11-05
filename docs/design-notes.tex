@@ -1,0 +1,152 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{longtable,booktabs,array}
+\usepackage[colorlinks=true,urlcolor=blue]{hyperref}
+
+\newcolumntype{R}{>{\raggedright\arraybackslash}p{7.8cm}}
+\newcolumntype{V}{>{\raggedright\arraybackslash}p{3.6cm}}
+\newcommand{\issue}[1]{\href{https://github.com/ZacharyManzali/pictureFrame/issues?q=#1}{#1}}
+
+\title{pictureFrame: Design Notes}
+\author{Zachary Manzali}
+\date{Revision A, Status: Requirements \\ 2026-11-04}
+
+\begin{document}
+\maketitle
+
+Digital picture frame built from COTS parts around a Raspberry Pi. No custom PCB is planned yet.
+Each requirement is tracked as a GitHub issue carrying the same ID.
+
+\section{Requirements}
+
+\subsection{Hardware requirements}
+\begin{longtable}{l R V}
+\toprule
+\textbf{ID} & \textbf{Requirement} & \textbf{Verified by} \\
+\midrule\endhead
+\issue{R-DSP-1} & 10'' class IPS display (good viewing angles) & Datasheet / panel spec \\
+\issue{R-DSP-2} & Capacitive touch (hardware side): panel with touch controller usable by the Pi & Bench test \\
+\issue{R-DSP-3} & Resolution $\ge$ 1280$\times$800 (target, confirm in trade study) & Datasheet \\
+\issue{R-MEC-1} & Total depth $\le$ 60 mm including Pi, drive, cables and the stand leg (revised from 25 mm on 2026-11-04, desk use only) & Stack-up drawing, then measurement \\
+\issue{R-MEC-2} & Front: store-bought picture/shadow-box frame. Rear: 3D-printed shell holding the electronics & Fit check \\
+\issue{R-MEC-3} & Desk use only, standing on an angled easel back (printed leg on the rear shell); no wall mounting. Landscape (portrait is a stretch goal) & Fit check \\
+\issue{R-MEC-4} & Passive cooling only (no fan); vents in rear shell & Thermal soak test \\
+\issue{R-CMP-1} & Raspberry Pi; model chosen by trade study (Zero 2 W vs 4 vs 5) against R-MEC-1 and software load & Trade study \\
+\issue{R-STO-1} & External USB drive, $\ge$ 1 TB target, low-profile (2.5'' SSD or M.2 enclosure), mounted flat & Stack-up, datasheet \\
+\issue{R-NET-1} & Wi-Fi (onboard Pi Wi-Fi) & Bench test \\
+\issue{R-FTR-3} & PIR motion sensor connected to the Pi (hardware side of motion wake) & Bench test \\
+\issue{R-FTR-4} & Ambient light sensor on the Pi; backlight must be software-controllable (check in trade study) & Bench test \\
+\issue{R-PWR-1} & Single wall power cable into the frame, feeding Pi, panel and drive & Review \\
+\issue{R-PWR-2} & Power budget with $\ge$ 20\% margin, calculated from datasheets & Power budget (Section~\ref{sec:power}) \\
+\issue{R-PWR-3} & Used in Brazil (127~V or 220~V depending on region, 60~Hz): PSU must be universal input, 100--240~VAC, 50/60~Hz & PSU datasheet \\
+\issue{R-PWR-4} & Frame is built in the US and used in Brazil: the frame has a visible low-voltage 5~V DC inlet, and two separate external supplies are used, a US supply for building and a Brazilian supply (NBR~14136 plug, bought locally) for use. Mains never enters the frame & Review \\
+\issue{R-PWR-5} & Prefer INMETRO-certified PSU; mains stays outside the frame (external brick) so the enclosure only carries low-voltage DC & PSU listing \\
+\issue{R-CST-1} & Parts $\le$ \$300, drive not included & BOM \\
+\bottomrule
+\end{longtable}
+
+\subsection{Software requirements}
+\begin{longtable}{l R V}
+\toprule
+\textbf{ID} & \textbf{Requirement} & \textbf{Verified by} \\
+\midrule\endhead
+\issue{R-DSP-2} & Touch input: swipe for next/previous, tap to pause & Bench test \\
+\issue{R-STO-2} & OS on microSD (or boot from SSD); photos on the external drive & Bench test \\
+\issue{R-UPL-1} & SMB network share for drag-and-drop from PC/Mac & Bench test \\
+\issue{R-UPL-2} & Web upload page that works from a phone browser & Bench test \\
+\issue{R-UPL-3} & Email-to-frame: photos emailed to a dedicated address are fetched (IMAP poll) and added & Bench test \\
+\issue{R-UPL-4} & Uploads limited to the home network or require auth; no open internet exposure & Review \\
+\issue{R-FTR-1} & Slideshow with configurable interval, shuffle and EXIF auto-rotate & Bench test \\
+\issue{R-FTR-2} & Scheduled screen on/off (for example off overnight) & Bench test \\
+\issue{R-FTR-3} & Motion sensor wakes the display & Bench test \\
+\issue{R-FTR-4} & Ambient light reading drives auto-brightness & Bench test \\
+\bottomrule
+\end{longtable}
+
+\section{Constraints}
+\begin{itemize}
+  \item Enclosure: $\le$ 60 mm total depth including the stand leg, desk use only, 10'' class panel, store-bought front frame with 3D-printed rear shell.
+  \item Environment: indoor, Brazil, room temperature (confirm ambient range for the thermal test).
+  \item Cost: $\le$ \$300 excluding drive, one unit.
+  \item Certifications: none for the build itself; PSU should carry INMETRO.
+\end{itemize}
+
+\section{Known tensions (open)}
+\begin{itemize}
+  \item Depth budget (60 mm) vs panel, Pi, drive and cooling stack-up: heights of the Pi and panel driver board are not yet confirmed from drawings.
+  \item Touch plus software-dimmable backlight plus 10'' narrows the panel choices.
+  \item Pi Zero 2 W RAM vs running SMB, web upload, email fetch and slideshow together.
+\end{itemize}
+
+\section{Software architecture}
+All software is Python. The slideshow uses pygame (SDL2) drawing directly to the display through KMS/DRM, with no desktop environment, to keep RAM use low. Each service runs under systemd.
+
+\begin{longtable}{l p{4.6cm} p{4.6cm}}
+\toprule
+\textbf{Service} & \textbf{Library} & \textbf{Requirements} \\
+\midrule\endhead
+slideshow & pygame (SDL2, KMS/DRM) & R-FTR-1; R-DSP-2 (swipe and tap from SDL touch events) \\
+web\_upload & Flask, plain HTML with a little JavaScript & R-UPL-2, R-UPL-4 \\
+email\_fetch & stdlib \texttt{imaplib} and \texttt{email}, on a timer & R-UPL-3 \\
+power\_mgr & schedule, PIR GPIO and light sensor I2C (gpiozero, smbus2); backlight and display on/off & R-FTR-2, R-FTR-3, R-FTR-4 \\
+SMB share & Samba configuration, no code & R-UPL-1 \\
+\bottomrule
+\end{longtable}
+
+The services share a photo directory on the external drive. Upload services write there and the slideshow rescans it, so no database is needed at first. Configuration lives in one TOML file (interval, schedule, IMAP account, paths).
+
+\textbf{Unverified assumptions} (depend on the display trade study): that SDL2's KMS/DRM backend and the panel's touch controller work together on Raspberry Pi OS Lite, and how the panel's backlight is controlled.
+
+\section{Key parts}
+\begin{longtable}{p{2.2cm} p{3.6cm} p{5cm} p{3.6cm}}
+\toprule
+\textbf{Function} & \textbf{Part} & \textbf{Why} & \textbf{Datasheet} \\
+\midrule
+Compute & Raspberry Pi 4 Model B, 4 GB & Full-size USB for the drive, dual-band Wi-Fi, RAM headroom & Pi 4 product brief RP-008344-DS-7 \\
+Display & Waveshare 10.1'' DSI LCD (C), SKU 23450 & Landscape 1280$\times$800 IPS, one DSI cable, documented software backlight & Waveshare wiki (no PDF datasheet found) \\
+Storage & 1 TB 2.5'' SATA SSD in a USB-A enclosure (exact parts TBD) & Only option with a datasheet power figure; fits the Pi 4's 1.1 A USB budget & Samsung 870 EVO datasheet (reference candidate) \\
+Motion sensor & Adafruit PIR 189 & Documented 3.3 V logic output (seller claim), gpiozero support & Adafruit product page (seller claim; measure output before wiring) \\
+Light sensor & Adafruit VEML7700 breakout & Fixed I2C address 0x10, 3.3 V logic, 8 $\mu$A, low cost & Vishay VEML7700 datasheet \\
+Power supply & 5 V, at least 4 A (6 A preferred) external supply into a 5 V inlet; US reference: Mean Well GST60A05-P1J; Brazil supply bought locally (TBD) & Margin over a 3.4 A budget; mains stays outside the frame & Mean Well GST60A05 datasheet (inlet part TBD) \\
+\bottomrule
+\end{longtable}
+
+\section{Power budget}\label{sec:power}
+Currents at 5~V. Typical and peak values are mostly \textbf{estimates}; only the Pi~4 typical (Raspberry Pi docs), the panel figures (Waveshare wiki) and the SSD average (Samsung 870~EVO datasheet) are sourced.
+
+\begin{tabular}{lll}
+\toprule
+\textbf{Load} & \textbf{Typical} & \textbf{Peak} \\
+\midrule
+Pi 4 (bare board) & 0.60 A & about 1.2 A (estimate) \\
+Waveshare DSI LCD (C) & 0.52 A & 0.88 A (minimum input) \\
+1 TB SATA SSD & 0.4--0.5 A & about 0.7 A (estimate) \\
+PIR and light sensor & about 0.01 A & about 0.05 A (estimate) \\
+\midrule
+\textbf{Total} & \textbf{about 1.5--1.6 A} & \textbf{about 2.8 A} \\
+Supply minimum (+20\%) & & about 3.4 A \\
+\bottomrule
+\end{tabular}
+
+The supply must therefore be 5~V and at least 4~A, with 6~A preferred. The panel needs 4.75--5.30~V at its input, so internal runs must be short and thick.
+
+\section{Decision log}
+\begin{longtable}{l p{4.2cm} p{4.2cm} p{3cm}}
+\toprule
+\textbf{Date} & \textbf{Decision} & \textbf{Reason} & \textbf{Rejected} \\
+\midrule\endhead
+2026-11-04 & Raspberry Pi as compute platform & Cost-effective, built-in Wi-Fi, USB storage & Not yet compared \\
+2026-11-04 & Store-bought front frame plus 3D-printed rear shell & Easier than fully printed or wood enclosure & Fully printed, woodworking \\
+2026-11-04 & Documentation written in \LaTeX{} & Owner preference & Markdown \\
+2026-11-04 & Raspberry Pi 4 Model B (4 GB) and Waveshare 10.1'' DSI LCD (C) & Function first; Pi 4 gives RAM and USB headroom, the DSI panel is landscape-native with documented backlight control and ships in the US & Zero 2 W, Pi 5, Compute Modules; ESP32 (no SMB, weak USB-drive and photo-decoding support); HDMI and other DSI panels \\
+2026-11-04 & Storage: 1 TB 2.5'' SATA SSD in a USB-A enclosure & Lowest risk against the Pi 4's 1.1 A aggregate USB budget; datasheet power figure exists & Samsung T7 (power unverified), SanDisk Extreme V2 (reported disconnects), NVMe enclosure, HDD \\
+2026-11-04 & Sensors: Adafruit PIR 189 (motion) and Adafruit VEML7700 (ambient light, I2C) & Both documented for 3.3 V Pi use, low cost, gpiozero and CircuitPython support & HC-SR501 (clone variation), SparkFun 13285 (needs pull-up), BH1750 (clips at about 65 klx), TSL2591 (higher cost and current) \\
+2026-11-04 & Power: 5 V DC inlet in the casing, with a separate external supply per country (US to build, Brazilian to use) & Keeps mains outside the frame (R-PWR-5), avoids relying on a US-bought supply being acceptable in Brazil & Mains inlet (IEC C14) in the casing; official Raspberry Pi 15 W supply (fixed plug, no margin) \\
+2026-11-04 & Depth limit raised from 25 mm to 60 mm; desk-only with angled easel back & Frame never hangs, so extra depth is acceptable; opens up Pi 4/5 with more RAM & Wall-hang, flat-base stand, lie-flat \\
+2026-11-04 & Python with pygame for the display; Python for all services & Light enough for a Pi Zero 2 W, one language, owner knows some Python & Chromium kiosk web UI (heavy for Zero 2 W), Qt/PySide6 (heavier, steeper learning curve) \\
+\bottomrule
+\end{longtable}
+
+\end{document}

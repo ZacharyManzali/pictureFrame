@@ -1,0 +1,60 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=2cm,landscape]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{longtable,booktabs,array}
+\usepackage[colorlinks=true]{hyperref}
+
+\title{pictureFrame: Prototype Bill of Materials}
+\author{Zachary Manzali}
+\date{2026-11-04}
+
+\begin{document}
+\maketitle
+
+Prices are in USD as fetched on 2026-11-04 and change often. \textbf{Status:} \emph{Page} = read from the seller page; \emph{Snippet} = from a search result or price tracker, unconfirmed; \emph{OOS} = out of stock; \emph{Not found} = not priced. Product links are in \texttt{docs/bom.csv}. Panel contents are a seller claim, not a datasheet.
+
+\begin{longtable}{l p{5.4cm} p{3.6cm} p{2.6cm} r c l p{5.6cm}}
+\toprule
+\textbf{\#} & \textbf{Item} & \textbf{Part / SKU} & \textbf{Seller} & \textbf{USD} & \textbf{Qty} & \textbf{Status} & \textbf{Notes} \\
+\midrule\endhead
+1 & Raspberry Pi 4 Model B, 4 GB (bare board) & Adafruit 4296 & Adafruit & 120.00 & 1 & Page & In stock; box contents not stated \\
+2 & Waveshare 10.1'' DSI LCD (C) & 23450 & Waveshare US & 83.99 & 1 & Page & Stock not stated; box: 160 mm and 50 mm 15-pin FPC, 12 cm DSI cable (Pi~5/CM4), 200 mm PH2.0 4-pin cable, screws \\
+3a & Samsung 870 EVO 1 TB SATA SSD & MZ-77E1T0B/AM & Amazon US & 335.17 & 1 & Snippet & Tracker value, 2026-08-06; unverified \\
+3b & UGREEN CM471 2.5'' USB 3.0 enclosure & CM471 & Amazon US & -- & 1 & Not found & Detachable micro-USB to USB-A cable, \emph{no} built-in USB-A plug; UASP claimed \\
+4a & Adafruit PIR sensor & 189 & Adafruit & 9.95 & 1 & Page & In stock; 1 ft 3-wire socket cable included \\
+4b & Adafruit VEML7700 lux sensor & 4162 & Adafruit & 4.95 & 1 & Page & In stock; QT cable not included \\
+5 & Mean Well 5 V 6 A supply & GST60A05-P1J & Jameco & 19.40 & 1 & Snippet & Newark about 14.12, Mouser about 22.36; inlet C14 to verify \\
+6 & C13 cord, NEMA 5-15P, 6 ft (build) & StarTech PXT101 & CDW & 11.99 & 1 & Snippet & 10 A/125 V, UL listed per snippet \\
+7 & C13 cord, NBR 14136, 6 ft (Brazil) & Signal and Power & Signal and Power & 7.49 & 1 & Snippet & INMETRO per seller claim; check 10 A plug \\
+8a & Panel-mount 2.1 mm DC jack & Adafruit 610 & Adafruit & 2.95 & 1 & OOS & Current rating not stated; unrated \\
+8b & 2.1 mm plug to screw terminal & Adafruit 369 & Adafruit & 2.00 & 1 & Page & In stock; no rating stated \\
+8c & 2.1 mm plug to bare-wire pigtail & -- & -- & -- & 1 & Not found & Use item 8b plus wire \\
+9a & USB-C breakout (Pi power input) & Adafruit 4090 & Adafruit & 2.95 & 1 & Page & No 3 A rating; 5.1 k$\Omega$ on CC1 only per page; \textbf{unrated} \\
+9b & USB-C cut-cable pigtail & -- & -- & -- & 1 & Not found & \\
+10a & 18 AWG silicone wire, red/black, 25 ft & BNTECHGO SW18G150008F25C2 & Amazon US & 45.99 & 1 & Snippet & Ampacity not stated; looks high, try a smaller spool \\
+10c & STEMMA QT to female-socket cable & Adafruit 4397 & Adafruit & 0.95 & 1 & OOS & Correct cable for VEML7700 to Pi header \\
+10d & Female/female jumpers, 40 $\times$ 6'' & Adafruit 266 & Adafruit & 3.95 & 1 & Page & In stock \\
+10e & Ferrules, JST/Dupont, heat-shrink & -- & -- & -- & 1 & Not found & Not priced \\
+11a & microSD 64 GB high-endurance & MB-MJ64KA/AM & CDW/Amazon & 14.99 & 1 & Snippet & Backordered at CDW \\
+11b & USB microSD card reader & -- & -- & -- & 1 & Not found & \\
+12 & Multimeter 9205B+ & Adafruit 2034 & Adafruit & 17.50 & 1 & OOS & Needed to check PIR output and the 5 V rail; not in subtotal \\
+\bottomrule
+\end{longtable}
+
+\paragraph{Subtotal.} About \$666.72 for the priced lines 1, 2, 3a, 4a, 4b, 5, 6, 7, 8a, 8b, 9a, 10a, 10c, 10d and 11a. It excludes unpriced lines (3b, 8c, 9b, 10e, 11b) and the multimeter, so the real total is higher. It is mostly snippet-based, so treat it as indicative.
+
+\paragraph{Optional / alternatives (not in the subtotal).} Samsung T7 1~TB portable SSD (MU-PC1T0T/AM, Best Buy \$189.99 snippet; included cable not confirmed); Adafruit STEMMA QT to male-header cable 4209 (wrong end for the Pi header); Pi T-Cobbler Plus 2028 (breadboard breakout, not needed).
+
+\paragraph{Shipping.} Adafruit stocks lines 1, 4a, 4b, 8b, 9a and 10d in one order. Its out-of-stock items (8a, 10c and the multimeter) need other sellers.
+
+\paragraph{Could not confirm.}
+\begin{itemize}
+  \item UGREEN enclosure price, URL and cable; Samsung T7 box contents.
+  \item Live US price and the AC inlet of the Mean Well (the datasheet should settle the inlet).
+  \item Waveshare stock; which FPC length suits the Pi~4B.
+  \item Panel-jack and USB-C breakout current ratings; wire ampacity.
+  \item Crimp, Dupont and JST connectors; heat-shrink; USB microSD reader; the multimeter (out of stock).
+\end{itemize}
+
+\end{document}

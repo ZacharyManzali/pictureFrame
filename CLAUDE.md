@@ -1,32 +1,22 @@
 # Project guidance for Claude
 
-This repo is client hardware work: mistakes end up as scrapped boards, not just
-failed builds.
+DIY digital picture frame: COTS hardware around a Raspberry Pi, with Python software. See `docs/design-notes.tex` for requirements and `docs/trade-studies.tex` for open part choices.
 
 ## Verification rules
 
-- Never state a pin assignment, footprint, voltage limit or current rating
+- Never state a pin assignment, dimension, voltage limit or current rating
   without citing the datasheet section or table it came from. If the datasheet
   isn't available, say so; don't fill in from memory.
-- Flag assumptions explicitly ("assuming the LDO's dropout is ≤200 mV, check
-  table 7.5"), so they can be verified.
-- When reviewing, report findings with the reference designator and pin
-  (e.g. `U3 pin 12 (NRST)`), not just a net name.
+- Flag assumptions explicitly, so they can be verified.
 
 ## Files
 
-- Never hand-edit `.kicad_sch` / `.kicad_pcb` structure (symbols, wires,
-  footprints). Text variables in `board.kicad_pro` and field values are fine.
-  Propose schematic/layout changes as instructions for the designer in KiCad.
-- `outputs/` and `build/` are generated; never edit or commit them.
+- Documentation (design notes, trade studies, reports) is written in LaTeX (`.tex`, build with `latexmk -pdf`); README.md stays Markdown.
 - Datasheets live in `docs/datasheets/` (gitignored, local only).
+- `outputs/` and `build/` are generated; never edit or commit them.
 
 ## Conventions
 
-- Project-specific symbols and footprints go in `hardware/lib/`, never in the
-  user's global KiCad libraries, so the repo builds on any machine.
-- Every BOM part carries `MPN` and `Manufacturer` fields (and `LCSC` if JLCPCB
-  assembles it); the BOM output relies on these field names.
-- Hardware revisions are letters (A, B, …) set by the `REVISION` text variable;
-  firmware uses semver in `firmware/app/VERSION`. Tags: `hw-revA`, `fw-v0.1.0`.
-- Record non-obvious design decisions in `docs/design-notes.md` → Decision log.
+- Requirements have IDs (R-DSP-1, R-UPL-3, ...) and each one is a GitHub issue with the same ID, labelled `hardware` and/or `software`.
+- Software is Python (pygame for the slideshow, Flask for web upload) under `software/`.
+- Record non-obvious design decisions in `docs/design-notes.tex` → Decision log.
