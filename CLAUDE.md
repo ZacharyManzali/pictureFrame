@@ -28,6 +28,5 @@ failed builds.
   user's global KiCad libraries, so the repo builds on any machine.
 - Every BOM part carries `MPN` and `Manufacturer` fields (and `LCSC` if JLCPCB
   assembles it); the BOM output relies on these field names.
-- Hardware revisions are letters (A, B, …) set by the `REVISION` text variable;
-  firmware uses semver in `firmware/app/VERSION`. Tags: `hw-revA`, `fw-v0.1.0`.
+- Hardware revisions are letters (A, B, …) set by the `REVISION` text variable. Tag: `hw-revA`.
 - Record non-obvious design decisions in `docs/design-notes.tex` → Decision log.
