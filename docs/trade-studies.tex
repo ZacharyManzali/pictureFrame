@@ -136,7 +136,47 @@ Sabrent EC-SNVE + own M.2 SSD & not stated & about 117$\times$31.5$\times$12.7 m
 \paragraph{Bench checks.} Run \texttt{vcgencmd get\_throttled} and watch \texttt{dmesg} for undervoltage and UAS errors with the drive and the panel running together; get the bridge's USB ID with \texttt{lsusb} before adding any quirk.
 
 \section{Sensors}
-Drives R-FTR-3, R-FTR-4. Candidates TBD: PIR module, I2C ambient light sensor.
+Drives R-FTR-3, R-FTR-4. [DS] marks a datasheet or official value; [SC] marks a seller claim.
+
+\paragraph{Pi 4 GPIO facts.}
+\begin{itemize}
+  \item GPIO logic is 3.3~V: VIL max 0.8~V, VIH min 2.0~V (Pi~4 datasheet RP-008341-DS, Table~3) [DS].
+  \item The official documentation says GPIO pins are not 5~V tolerant and 5~V must never be applied to one [DS].
+  \item The datasheet gives no absolute-maximum GPIO input voltage. Drive-current figures disagree between the datasheet and the documentation; a PIR output draws microamps, so this does not matter here.
+  \item Limits on the 5~V and 3.3~V header pins were \textbf{not found} in either official document: \textbf{unverified}.
+\end{itemize}
+
+\paragraph{PIR motion sensor (R-FTR-3).}
+\begin{longtable}{p{3.1cm} p{2.9cm} p{3.4cm} p{2.9cm} p{2.4cm}}
+\toprule
+\textbf{Part} & \textbf{Supply} & \textbf{Output} & \textbf{Range / angle} & \textbf{Price (US)} \\
+\midrule\endhead
+Adafruit PIR 189 & 5--12~V [SC] & 3.3~V logic [SC] & about 7~m, 120\textdegree{} [SC] & \$9.95 Adafruit \\
+HC-SR501 (generic) & 4.5--20~V or 5--20~V (sheets conflict) [DS, reseller-hosted] & 3.3~V [DS] & 7~m, under 120\textdegree{} [DS] & not verified \\
+SparkFun SEN-13285 & 5--12~V [SC] & open collector, needs pull-up, active low [SC] & not listed & \$11.50 SparkFun \\
+Adafruit Mini PIR 4871 & 3--12~V [SC] & 3.3~V [SC] & 2--5~m, 100\textdegree{} [SC] & \$3.95 Adafruit \\
+\bottomrule
+\end{longtable}
+
+Not verified: Panasonic EKMC (datasheet fetch failed), Murata IRA-S210ST01, Pimoroni and Seeed PIRs. Current draw and warm-up of the Adafruit 189 are not stated.
+
+\textbf{Decision (owner, 2026-11-04):} Adafruit PIR 189. Software uses gpiozero \texttt{MotionSensor} (\texttt{when\_motion}, \texttt{when\_no\_motion}) [DS, gpiozero docs]. Before wiring, \textbf{measure the output pin} with a multimeter to confirm it is 3.3~V, since the Pi~4 GPIO is not 5~V tolerant.
+
+\paragraph{Ambient light sensor, I2C (R-FTR-4).}
+\begin{longtable}{p{2.6cm} p{2.8cm} p{3cm} p{2.9cm} p{2.4cm}}
+\toprule
+\textbf{Part} & \textbf{I2C address} & \textbf{Supply / current} & \textbf{Range} & \textbf{Price (US)} \\
+\midrule\endhead
+VEML7700 (Adafruit 4162) & 0x10, fixed [DS] & chip 2.5--3.6~V, 8~$\mu$A operating [DS]; breakout has regulator and level shifter [SC] & 0 to about 140~klx on the chip [DS] & \$4.95 Adafruit \\
+BH1750 (Adafruit 4681) & 0x23, or 0x5C [SC] & 3--5~V breakout [SC] & about 65~klx, then clips [SC] & \$4.50 Adafruit \\
+TSL2591 (Adafruit 1980) & 0x29 [SC] & 3.3--5~V breakout; 275~$\mu$A typical active [DS, TSL25911 sheet] & to 88,000~lux [SC] & \$6.95 Adafruit \\
+OPT3001 (chip) & 0x44--0x47 [DS, unconfirmed] & 1.6--3.6~V, 1.8~$\mu$A [DS] & 83,865.6~lux full scale [DS] & no US breakout found \\
+\bottomrule
+\end{longtable}
+
+\textbf{Decision (owner, 2026-11-04):} Adafruit VEML7700. Gain and integration time must be set (autoranging) to avoid clipping in bright light, and readings are nonlinear at high lux without correction. The Waveshare DSI LCD (C) touch controller appears as a Goodix device (implied address 0x14, on a separate bus 10), which the wiki does not state outright, so no clash with 0x10 is expected: \textbf{unverified}; run \texttt{i2cdetect} on the real hardware.
+
+\paragraph{Not verified.} Panasonic and Murata PIR specs, Pi~4 5~V/3.3~V header pin limits, BH1750 and OPT3001 datasheet details, library support beyond the VEML7700.
 
 \section{Power supply}
 Drives R-PWR-1..5, R-CST-1. Candidates TBD. Universal input 100--240~VAC, NBR~14136 plug or detachable cord, INMETRO listing, output sized from the power budget plus 20\%.
