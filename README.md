@@ -2,7 +2,7 @@
 
 A slim DIY digital picture frame built from off-the-shelf parts around a Raspberry Pi.
 
-- 10" IPS touchscreen in a store-bought frame with a 3D-printed rear shell, ≤ 25 mm deep
+- 10" IPS touchscreen in a store-bought frame with a 3D-printed rear shell, ≤ 60 mm deep, desk use with an angled easel back
 - Photos stored on an external USB drive
 - Upload over Wi-Fi by SMB share, web page or email
 - Screen schedule, motion wake and auto-brightness
