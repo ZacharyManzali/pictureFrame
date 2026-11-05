@@ -99,7 +99,41 @@ To verify before relying on it:
 \end{itemize}
 
 \section{Storage}
-Drives R-STO-1, R-MEC-1. Candidates TBD: 2.5'' SSD, M.2 NVMe in USB enclosure. Check height and bus-powered current draw.
+Drives R-STO-1, R-STO-2, R-PWR-2, R-MEC-1.
+
+\paragraph{Pi 4 USB limits (Raspberry Pi Pi~4 datasheet RP-008341-DS, sections 4.1 and 5.3; official power-supply documentation).}
+\begin{itemize}
+  \item Downstream USB current is limited to about 1.1~A in aggregate over the four sockets (datasheet). The documentation table says 1.2~A; plan for 1.1~A.
+  \item The Pi~4 needs a 5~V/3~A supply. A 2.5~A supply is allowed only if downstream USB devices draw under 500~mA, so a bus-powered SSD points to the 3~A supply.
+  \item Low-voltage detection triggers below 4.63~V and logs a kernel entry.
+  \item No official statement on UAS quirks or bus-powered SSD support was found; the quirk workaround (\texttt{usb-storage.quirks} in \texttt{cmdline.txt}) comes from forum posts only.
+\end{itemize}
+
+\paragraph{Candidates.} Prices are tracker snapshots and volatile; confirm before ordering. Only the 870~EVO has a datasheet power figure.
+
+\begin{longtable}{p{4.2cm} p{3.4cm} p{3.6cm} p{3.2cm}}
+\toprule
+\textbf{Drive} & \textbf{Power} & \textbf{Size} & \textbf{Price (US)} \\
+\midrule\endhead
+Samsung 870 EVO 2.5'' SATA SSD in a UGREEN USB-A enclosure (VL711F0 bridge, UASP, seller claim) & 2.2--2.5~W average, 30--35~mW idle (2~TB, datasheet); maximum: conflicting sources & SSD 100$\times$69.85$\times$6.8 mm; enclosure not stated & SSD about \$470--500 (2~TB); 1~TB and enclosure not priced \\
+Samsung T7 portable & not stated & 85$\times$57$\times$8.0 mm & 1~TB about \$220--265 \\
+SanDisk Extreme Portable V2 & not stated & 100.5$\times$52.4$\times$8.95 mm & 1~TB about \$244 \\
+Sabrent EC-SNVE + own M.2 SSD & not stated & about 117$\times$31.5$\times$12.7 mm & enclosure not found; may be end of life \\
+\bottomrule
+\end{longtable}
+
+\paragraph{Assessment.}
+\begin{itemize}
+  \item \textbf{HDD:} rejected. Spin-up surges are the worst case against a 1.1~A shared budget.
+  \item \textbf{NVMe in an enclosure:} rejected. Highest peak-draw risk, highest total cost, and the enclosure may be discontinued.
+  \item \textbf{SanDisk Extreme V2:} one forum thread reports disconnects on a Pi~4 (power may be the cause). Not preferred.
+  \item \textbf{T7:} slim and cheaper, but its current draw is unverified. Kept as the alternative.
+  \item \textbf{SATA SSD in a USB-A enclosure:} lowest risk. 2.5~W average is inside the budget (about 5.5~W at 1.1~A and 5~V), and the USB-A plug goes straight into the Pi. It is the thickest option, which no longer matters under the 60~mm depth limit.
+\end{itemize}
+
+\textbf{Decision (owner, 2026-11-04):} lead with a 1~TB 2.5'' SATA SSD in a USB-A enclosure. The exact SSD and enclosure are not chosen yet. The 870~EVO with the UGREEN enclosure is the reference candidate; the 1~TB price, the enclosure's price and size, and the 870~EVO's maximum power are \textbf{unverified}.
+
+\paragraph{Bench checks.} Run \texttt{vcgencmd get\_throttled} and watch \texttt{dmesg} for undervoltage and UAS errors with the drive and the panel running together; get the bridge's USB ID with \texttt{lsusb} before adding any quirk.
 
 \section{Sensors}
 Drives R-FTR-3, R-FTR-4. Candidates TBD: PIR module, I2C ambient light sensor.

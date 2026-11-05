@@ -106,7 +106,7 @@ The services share a photo directory on the external drive. Upload services writ
 \midrule
 Compute & Raspberry Pi 4 Model B, 4 GB & Full-size USB for the drive, dual-band Wi-Fi, RAM headroom & Pi 4 product brief RP-008344-DS-7 \\
 Display & Waveshare 10.1'' DSI LCD (C), SKU 23450 & Landscape 1280$\times$800 IPS, one DSI cable, documented software backlight & Waveshare wiki (no PDF datasheet found) \\
-Storage & TBD & & \\
+Storage & 1 TB 2.5'' SATA SSD in a USB-A enclosure (exact parts TBD) & Only option with a datasheet power figure; fits the Pi 4's 1.1 A USB budget & Samsung 870 EVO datasheet (reference candidate) \\
 Power supply & TBD & & \\
 \bottomrule
 \end{longtable}
@@ -123,6 +123,7 @@ To be filled from datasheets once parts are chosen.
 2026-11-04 & Store-bought front frame plus 3D-printed rear shell & Easier than fully printed or wood enclosure & Fully printed, woodworking \\
 2026-11-04 & Documentation written in \LaTeX{} & Owner preference & Markdown \\
 2026-11-04 & Raspberry Pi 4 Model B (4 GB) and Waveshare 10.1'' DSI LCD (C) & Function first; Pi 4 gives RAM and USB headroom, the DSI panel is landscape-native with documented backlight control and ships in the US & Zero 2 W, Pi 5, Compute Modules; ESP32 (no SMB, weak USB-drive and photo-decoding support); HDMI and other DSI panels \\
+2026-11-04 & Storage: 1 TB 2.5'' SATA SSD in a USB-A enclosure & Lowest risk against the Pi 4's 1.1 A aggregate USB budget; datasheet power figure exists & Samsung T7 (power unverified), SanDisk Extreme V2 (reported disconnects), NVMe enclosure, HDD \\
 2026-11-04 & Depth limit raised from 25 mm to 60 mm; desk-only with angled easel back & Frame never hangs, so extra depth is acceptable; opens up Pi 4/5 with more RAM & Wall-hang, flat-base stand, lie-flat \\
 2026-11-04 & Python with pygame for the display; Python for all services & Light enough for a Pi Zero 2 W, one language, owner knows some Python & Chromium kiosk web UI (heavy for Zero 2 W), Qt/PySide6 (heavier, steeper learning curve) \\
 \bottomrule
