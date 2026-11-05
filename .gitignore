@@ -2,21 +2,12 @@
 outputs/
 build/
 
-# KiCad local/temporary files
-*.kicad_prl
-*-backups/
-_autosave-*
-*.lck
-~*.lck
-fp-info-cache
-*.bak
-\#auto_saved_files#
 
-# Zephyr / Python
+# Python
 .venv/
 __pycache__/
 
-# Vendor datasheets: keep locally, link in docs/design-notes.md (copyrighted)
+# Vendor datasheets: keep locally, link in docs/design-notes.tex (copyrighted)
 docs/datasheets/
 
 # Editors / OS

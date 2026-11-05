@@ -12,4 +12,4 @@ A slim DIY digital picture frame built from off-the-shelf parts around a Raspber
 
 See [docs/design-notes.tex](docs/design-notes.tex) for requirements and decisions, and [docs/trade-studies.tex](docs/trade-studies.tex) for the open part selections.
 
-Started from [hw-project-template](https://github.com/ZacharyManzali/hw-project-template).
+Started from [hw-project-template](https://github.com/ZacharyManzali/hw-project-template); the KiCad and Zephyr parts were removed because this build uses off-the-shelf hardware.
