@@ -23,3 +23,13 @@ docs/datasheets/
 .vscode/*
 !.vscode/extensions.json
 .DS_Store
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+docs/*.pdf

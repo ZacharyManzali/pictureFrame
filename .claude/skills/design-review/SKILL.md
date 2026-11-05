@@ -10,7 +10,7 @@ goal is a findings list the designer can act on in KiCad.
 
 ## 1. Gather context
 
-1. Read `docs/design-notes.md` for requirements, rails and key parts.
+1. Read `docs/design-notes.tex` for requirements, rails and key parts.
 2. Export a netlist so connections are explicit rather than inferred from
    S-expression geometry:
    `kicad-cli sch export netlist --format kicadxml -o /tmp/review-netlist.xml hardware/board.kicad_sch`

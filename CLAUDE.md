@@ -19,6 +19,7 @@ failed builds.
   footprints). Text variables in `board.kicad_pro` and field values are fine.
   Propose schematic/layout changes as instructions for the designer in KiCad.
 - `outputs/` and `build/` are generated; never edit or commit them.
+- Documentation (design notes, trade studies, reports) is written in LaTeX (`.tex`, build with `latexmk -pdf`); README.md stays Markdown.
 - Datasheets live in `docs/datasheets/` (gitignored, local only).
 
 ## Conventions
@@ -29,4 +30,4 @@ failed builds.
   assembles it); the BOM output relies on these field names.
 - Hardware revisions are letters (A, B, …) set by the `REVISION` text variable;
   firmware uses semver in `firmware/app/VERSION`. Tags: `hw-revA`, `fw-v0.1.0`.
-- Record non-obvious design decisions in `docs/design-notes.md` → Decision log.
+- Record non-obvious design decisions in `docs/design-notes.tex` → Decision log.

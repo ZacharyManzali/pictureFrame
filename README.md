@@ -10,6 +10,6 @@ A slim DIY digital picture frame built from off-the-shelf parts around a Raspber
 
 **Status:** requirements and trade studies. No parts chosen yet.
 
-See [docs/design-notes.md](docs/design-notes.md) for requirements and decisions, and [docs/trade-studies.md](docs/trade-studies.md) for the open part selections.
+See [docs/design-notes.tex](docs/design-notes.tex) for requirements and decisions, and [docs/trade-studies.tex](docs/trade-studies.tex) for the open part selections.
 
 Started from [hw-project-template](https://github.com/ZacharyManzali/hw-project-template).
